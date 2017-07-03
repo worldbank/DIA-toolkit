@@ -20,10 +20,9 @@ gen y1 = outcome `effect'
 // Power calculations
 
 forvalues k = 0/1 {
-
-	pctile q`k' = y`k', nq(100) genp(t`k')
-	kdens y`k', adaptive bw(sjpi) at(q`k') gen(f`k') nograph
-	gen s`k' = t`k'*(100 - t`k')/(100*f`k')^2
+    pctile q`k' = y`k', nq(100) genp(t`k')
+    kdens y`k', adaptive bw(sjpi) at(q`k') gen(f`k') nograph
+    gen s`k' = t`k'*(100 - t`k')/(100*f`k')^2
 }
 
 gen p = s1/(s0 + s1)
@@ -43,17 +42,17 @@ use "${bs_dir}/b_sample.dta", clear
 global vars = ""
 
 foreach v in mean p_10 p_20 p_30 p_40 p_50 p_60 p_70 p_80 p_90 {
-	global vars = "$vars _b_`v'"
+    global vars = "$vars _b_`v'"
 }
 
 foreach v of varlist * {
-	replace `v' = abs(`v' - ``v'[observed]')
+    replace `v' = abs(`v' - ``v'[observed]')
 }
 
 foreach v of varlist $vars {
-	qui sum `v', det
-	di `r(p95)'
+    qui sum `v', det
+    di `r(p95)'
 }
 
-bscr, norecenter
+bscr,       norecenter
 bscr $vars, norecenter
