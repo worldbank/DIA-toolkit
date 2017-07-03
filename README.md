@@ -3,6 +3,26 @@ This repository contains all the program codes developed in the "Distributional 
 
 ## How to Use the DIA-Toolkit
 
+To replicate Part 7, start on `/estimation/master.do`. This master file sets global paths, sets the current directory  and loads auxiliary programs.
+
+### Replicating Section 7.1
+
+Five files are available under `/estimation/brazil/`:
+
+- `brazil_setup.do` sets up the data (the baseline dataset is available from [AEJ-EP](https://www.aeaweb.org/articles?id=10.1257/app.20150149)).
+- `brazil_2.do` replicates Subsection 7.1.2 (treatment effects on summary statistics, weighted and unweighted).
+- `brazil_3.do` replicates Subsection 7.1.3 (bounds on features of the distribution of treatment effects).
+- `brazil_4.do` replicates Subsection 7.1.4 (conditional effects).
+- `brazil_5.do` replicates Subsection 7.1.5 (power calculations). Adjust line 11 to replicate the different columns of Table 6.
+
+These files involve bootstrapping, which may be lengthy. The folder `/results/bootstrap/` contains our bootstrap samples, which you can use to replicate our tables without running the algorithms.
+
+### Programs
+
+These programs are available in `/programs/`.
+
+- `dte.do` computes changes the distribution of marginal outcomes and its features. `dte.sthlp` documents the syntax (from Stata, run `help dte`).
+- `bscr.do` computes simultaneous confidence regions and critical values from a bootstrap sample of estimators according to Romano and Wolf (2010). `bscr.sthlp` documents the syntax (from Stata, run `help bscr`).
 
 ## How to Contribute 
 If you are familiar with GitHub pelase feel free to fork the repository and submitt a *pull request* with your suggested edits.
