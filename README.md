@@ -10,4 +10,6 @@ An easy but still very efficient way to provide any feedback on the code in this
 
 ## License
 
+This software is released under a creative commons license which allows for personal and research use only. For a commercial license please contact the authors. You can view a license summary here: http://creativecommons.org/licenses/by-nc/4.0/
+
 ## How to Reference this Paper
