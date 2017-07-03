@@ -14,7 +14,7 @@ program bscr, eclass
     preserve
 
     if `"`using'"' != "" {
-        qui use `anything' using `using', clear
+        qui use `anything' using "`using'", clear
     }
     else if "`anything'" != "" {
         keep `anything'
