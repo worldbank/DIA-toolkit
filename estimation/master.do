@@ -18,7 +18,7 @@ global main_dir = "`c(pwd)'\.."
 global estimation_dir "${main_dir}/estimation"
 global program_dir    "${main_dir}/programs"
 global results_dir    "${main_dir}/results"
-global bs_dir         "${results_dir}/bootstrap"
+global bs_dir         "${main_dir}/bootstrap"
 global data_dir       "${main_dir}/data"
 
 // Other preliminaries
