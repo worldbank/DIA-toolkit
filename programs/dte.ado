@@ -4,25 +4,24 @@
 
 program dte, eclass
     version 13.1
-	
-	if replay() {
-		if ("`e(cmd)'" != "dte") error 301
-		syntax , Level(cilevel)
-		ereturn display, level(`level')
-		exit
-	}
+
+    if replay() {
+        if ("`e(cmd)'" != "dte") error 301
+        syntax , Level(cilevel)
+        ereturn display, level(`level')
+        exit
+    }
 
     syntax anything [fw aw pw iw/] [if] [in] [, ///
            Statistics(namelist)                 ///
            Percentiles(numlist)                 ///
            CDF(numlist)                         ///
-		   PROB(varname)                        ///
+           PROB(varname)                        ///
            EFFECT(string)                       ///
            MODEL(string)                        ///
            TRIM(real 0.0)                       ///
            REPS(integer 1000)                   ///
-		   TITLE(string)                        ///
-		   *]
+           TITLE(string) * ]
 
     // Reserve names
 
@@ -40,43 +39,43 @@ program dte, eclass
 
     _iv_parse `anything'
 
-	local outcome    `s(lhs)'
-	local treatment  `s(endog)'
-	local control    `s(exog)'
-	local instrument `s(inst)'
-	
-	if `: list sizeof treatment' > 1 {
-		di as err `"syntax is "y t [X]" or "y (t = z [X])""'
-		exit 198
-	}
-	if "`treatment'" != "" & "`control'" != "" {
-		di as err `"syntax is "y t [X]" or "y (t = z [X])""'
-		exit 198
-	}
-	
-	if ("`control'" != "")    gettoken treatment  control : control
-	if ("`instrument'" != "") gettoken instrument control : control
-	
-	// Check input variables
-	
-	foreach v in treatment instrument {
-		if "``v''" != "" {
-			qui count if ``v'' != 0 & ``v'' != 1
-			if `r(N)' > 1 {
-				di as err "`v' not binary"
-				exit 149
-			}
-		}
-	}
+    local outcome    `s(lhs)'
+    local treatment  `s(endog)'
+    local control    `s(exog)'
+    local instrument `s(inst)'
 
-	// Switches
-	
-	local p = ("`prob'" != "")
-	local x = ("`control'" != "")
-	local z = ("`instrument'" != "")
-	local r = `p' + `x' + `z'
-	
-	// Mark sample
+    if `: list sizeof treatment' > 1 {
+        di as err `"syntax is "y t [X]" or "y (t = z [X])""'
+        exit 198
+    }
+    if ("`treatment'" != "") & ("`control'" != "") {
+        di as err `"syntax is "y t [X]" or "y (t = z [X])""'
+        exit 198
+    }
+
+    if ("`control'" != "")    gettoken treatment  control : control
+    if ("`instrument'" != "") gettoken instrument control : control
+
+    // Check input variables
+
+    foreach v in treatment instrument {
+        if "``v''" != "" {
+            qui count if ``v'' != 0 & ``v'' != 1
+            if `r(N)' > 1 {
+                di as err "`v' not binary"
+                exit 149
+            }
+        }
+    }
+
+    // Switches
+
+    local p = ("`prob'" != "")
+    local x = ("`control'" != "")
+    local z = ("`instrument'" != "")
+    local r = `p' + `x' + `z'
+
+    // Mark sample
 
     marksample touse
 
@@ -84,33 +83,33 @@ program dte, eclass
     markout `touse' `treatment'
 
     if (`p' == 1) markout `touse' `prob'
-	if (`x' == 1) markout `touse' `control'
-	if (`z' == 1) markout `touse' `instrument'
+    if (`x' == 1) markout `touse' `control'
+    if (`z' == 1) markout `touse' `instrument'
 
     // Check consistency
 
-    if `p' == 1 & `x' == 1 {
+    if (`p' == 1) & (`x' == 1) {
         di as err "option prob() may not be combined with control variables"
         exit 198
     }
-	if `r' == 0 & "`effect'" != "" {
+    if (`r' == 0) & ("`effect'" != "") {
         di as err "option effect() only available for IPW; see help file"
         exit 198
     }
-    if `x' == 0 & "`model'" != "" {
+    if (`x' == 0) & ("`model'" != "") {
         di as err "option model() requires control variables"
         exit 197
     }
-    if `r' == 0 & `trim' != 0.0 {
+    if (`r' == 0) & (`trim' != 0.0) {
         di as err "option trim() only available for IPW and IV; see help file"
         exit 198
     }
-	
-	// Parse weight
-	
-	if ("`exp'" != "") local weight "[`weight' = `exp']"
 
-	// Parse objects
+    // Parse weight
+
+    if ("`exp'" != "") local weight "[`weight' = `exp']"
+
+    // Parse objects
 
     if "`statistics'" == "" & "`percentiles'" == "" & "`cdf'" == "" {
         local statistics = "mean"
@@ -146,44 +145,44 @@ program dte, eclass
         local cdf : subinstr local cdf " " ", ", all
         local obj "`obj', (`cdf')"
     }
-	
-	// Parse effect
+
+    // Parse effect
 
     if `r' == 1 {
-	
+
         if ("`effect'" == "") local effect "treated"
-		
-		local ze "complier treated"
-		local xe "current population treated"
-		
-		if `: list sizeof effect' > 1 {
+
+        local ze "complier treated"
+        local xe "current population treated"
+
+        if `: list sizeof effect' > 1 {
             di as err "option effect() incorrectly specified"
             exit 198
-        }		
+        }
         if `z' == 1 & `: list posof `"`effect'"' in ze' == 0 {
             di as err "option effect() incorrectly specified"
             exit 198
         }
-		if `x' == 1 & `: list posof `"`effect'"' in xe' == 0 {
+        if `x' == 1 & `: list posof `"`effect'"' in xe' == 0 {
             di as err "option effect() incorrectly specified"
             exit 198
         }
     }
 
 
-	// Parse bootstrap options
+    // Parse bootstrap options
 
-	if `reps' > 1 {
-		if ("`title'" == "") local title "Distributional treatment effects"
-		local boot "bootstrap, `options' reps(`reps') title(`title') :"
-	}
-	
-	// Set up estimation
-	
-	local e_opts "outcome(`outcome')"
-	local e_opts "`e_opts' treatment(`treatment')"
-	local e_opts "`e_opts' object(`obj')"
-	local e_opts "`e_opts' names(`names')"
+    if `reps' > 1 {
+        if ("`title'" == "") local title "Distributional treatment effects"
+        local boot "bootstrap, `options' reps(`reps') title(`title') :"
+    }
+
+    // Set up estimation
+
+    local e_opts "outcome(`outcome')"
+    local e_opts "`e_opts' treatment(`treatment')"
+    local e_opts "`e_opts' object(`obj')"
+    local e_opts "`e_opts' names(`names')"
 
     // Set up reweighting
 
@@ -193,46 +192,46 @@ program dte, eclass
         local w_opts "`w_opts' treatment(`treatment')"
         local w_opts "`w_opts' prob(`prob')"
         local w_opts "`w_opts' effect(`effect')"
-		local w_opts "`w_opts' trim(`trim')"
-		
-		if (`z' == 1) local w_opts "`w_opts' instrument(`instrument')"
+        local w_opts "`w_opts' trim(`trim')"
+
+        if (`z' == 1) local w_opts "`w_opts' instrument(`instrument')"
 
         _s_weight `weight' if `touse', `w_opts'
 
-		local w_opts "reweight(`w')"
-		local weight ""
+        local w_opts "reweight(`w')"
+        local weight ""
     }
     else if `x' == 1 {
 
-		if ("`model'" == "") local model = "logit"
+        if ("`model'" == "") local model = "logit"
 
         gettoken model w_opts : model, parse(",")
 
-		local w_opts "options(`w_opts')"
-		local w_opts "`w_opts' model(`model')"
+        local w_opts "options(`w_opts')"
+        local w_opts "`w_opts' model(`model')"
         local w_opts "`w_opts' control(`control')"
         local w_opts "`w_opts' effect(`effect')"
-		local w_opts "`w_opts' trim(`trim')"
-		
-		if (`z' == 1) local w_opts "`w_opts' instrument(`instrument')"		
+        local w_opts "`w_opts' trim(`trim')"
+
+        if (`z' == 1) local w_opts "`w_opts' instrument(`instrument')"
     }
-	else if `z' == 1 {
-		local w_opts "instrument(`instrument')"
-		local w_opts "`w_opts' effect(`effect')"
-	}
+    else if `z' == 1 {
+        local w_opts "instrument(`instrument')"
+        local w_opts "`w_opts' effect(`effect')"
+    }
 
-	// Estimation
+    // Estimation
 
-	`boot' _s_`z'_`x' `weight' if `touse', `e_opts' `w_opts'
-	
-	// Post results
+    `boot' _s_`z'_`x' `weight' if `touse', `e_opts' `w_opts'
 
-	ereturn local cmdline `"`0'"'
-	ereturn local command `"`0'"'
-	ereturn local cmd     "dte"
-	ereturn local cmdname "dte"
+    // Post results
 
-	ereturn repost
+    ereturn local cmdline `"`0'"'
+    ereturn local command `"`0'"'
+    ereturn local cmd     "dte"
+    ereturn local cmdname "dte"
+
+    ereturn repost
 
 end
 
@@ -246,7 +245,7 @@ program _s_weight
     syntax [fw aw pw iw/] [if] [in],    ///
             Generate(name)              ///
             TREATment(varname numeric)  ///
-			PROB(varname numeric)       ///
+            PROB(varname numeric)       ///
            [INSTrument(varname numeric) ///
             TRIM(real 0.0)              ///
             EFFECT(name)]
@@ -258,12 +257,12 @@ program _s_weight
     // Construct appropriate weight
 
     qui if "`instrument'" != "" & "`effect'" == "complier" {
-		gen `generate' = (2*`treatment' - 1) * ///
-			(`instrument' -`prob')/(`prob'*(1 - `prob'))
+        gen `generate' = (2*`treatment' - 1) * ///
+            (`instrument' -`prob')/(`prob'*(1 - `prob'))
     }
-	qui else if "`instrument'" != "" & "`effect'" == "treated" {
+    qui else if "`instrument'" != "" & "`effect'" == "treated" {
         gen `generate' = `treatment' + ///
-			(1 - `treatment')*(`prob' - `instrument')/(1 - `prob')
+            (1 - `treatment')*(`prob' - `instrument')/(1 - `prob')
     }
     qui else if "`effect'" == "population" {
         gen `generate' = `treatment'/`prob' + (1 - `treatment')/(1 - `prob')
@@ -271,11 +270,11 @@ program _s_weight
     qui else if "`effect'" == "treated" {
         gen `generate' = `treatment' + (1 - `treatment')*`prob'/(1 - `prob')
     }
-	
-	// Trim selection probability
+
+    // Trim selection probability
 
     qui replace `generate' = . if `prob' < `trim' | `prob' > 1 - `trim'
-	qui replace `generate' = . if `touse' == 0
+    qui replace `generate' = . if `touse' == 0
 
     // Adjust for existing weights
 
@@ -297,8 +296,8 @@ program _s_0_0, eclass
             OUTCOME(varname numeric)   ///
             TREATment(varname numeric) ///
             OBJect(string)             ///
-            NAMes(string) 			   ///
-		   [REWEIGHT(varname numeric)]
+            NAMes(string)                ///
+           [REWEIGHT(varname numeric)]
 
     // Reserve names
 
@@ -327,15 +326,15 @@ program _s_0_0, eclass
     local N = `N0' + `N1'
 
     // Estimation
-	
-	if      ("`reweight'" != "") local object `"`object', "`reweight'""'
-	else if ("`exp'" != "")      local object `"`object', "`exp'""'
-    
+
+    if      ("`reweight'" != "") local object `"`object', "`reweight'""'
+    else if ("`exp'" != "")      local object `"`object', "`exp'""'
+
     mata: st_matrix("`b'", m_dte("`outcome'", "`T0'", "`T1'", `object'))
     matrix colnames `b' = `names'
-	
-	// Return results
-	
+
+    // Return results
+
     ereturn post `b', esample("`touse'") depname("`outcome'") obs(`N')
 
 end
@@ -361,8 +360,8 @@ program _s_1_0, eclass
     // Mark sample
 
     marksample touse
-	
-	// Split treated and untreated observations
+
+    // Split treated and untreated observations
 
     qui gen `T0' = `touse'*(1 - `treatment')
     qui gen `T1' = `touse'*`treatment'
@@ -377,22 +376,22 @@ program _s_1_0, eclass
     if (`r(N)' == 0) error 2000
     local N1 = `r(N)'
 
-	local N = `N0' + `N1'
-	
+    local N = `N0' + `N1'
+
     // Parse weight
 
     if ("`exp'" != "") local weight "[`weight' = `exp']"
-	
-	// Reweight
+
+    // Reweight
 
     summarize `instrument' `weight', meanonly
-	
-	// Construct appropriate weight
-	
-	qui if "`effect'" == "complier" {
-		gen `w' = (2*`T1' - 1)*(`instrument' - r(mean))/(r(mean)*(1 - r(mean)))
+
+    // Construct appropriate weight
+
+    qui if "`effect'" == "complier" {
+        gen `w' = (2*`T1' - 1)*(`instrument' - r(mean))/(r(mean)*(1 - r(mean)))
     }
-	qui else {
+    qui else {
         gen `w' = `T1' + `T0'*(r(mean) - `instrument')/(1 - r(mean))
     }
 
@@ -404,9 +403,9 @@ program _s_1_0, eclass
 
     mata: st_matrix("`b'", m_dte("`outcome'", "`T0'", "`T1'", `object', "`w'"))
     matrix colnames `b' = `names'
-	
-	// Return results
-	
+
+    // Return results
+
     ereturn post `b', esample("`touse'") depname("`outcome'") obs(`N')
 
 end
@@ -447,14 +446,14 @@ program _s_0_1, eclass
     qui predict `w'
     qui replace `w' = . if `w' < `trim' | `w' > 1 - `trim'
 
-	// Split treated and untreated observations
+    // Split treated and untreated observations
 
-	markout `touse' `w'
-	
+    markout `touse' `w'
+
     gen `T0' = `touse'*(1 - `treatment')
     gen `T1' = `touse'*`treatment'
-	
-	// Check number of observations
+
+    // Check number of observations
 
     qui count if `T0'
     if (`r(N)' == 0) error 2000
@@ -465,8 +464,8 @@ program _s_0_1, eclass
     local N1 = `r(N)'
 
     local N = `N0' + `N1'
-	
-	// Construct appropriate weight
+
+    // Construct appropriate weight
 
     qui if ("`effect'" == "population") replace `w' = `T1'/`w' + `T0'/(1 - `w')
     qui else replace `w' = `T1' + `T0'*`w'/(1 - `w')
@@ -479,9 +478,9 @@ program _s_0_1, eclass
 
     mata: st_matrix("`b'", m_dte("`outcome'", "`T0'", "`T1'", `object', "`w'"))
     matrix colnames `b' = `names'
-	
-	// Return results
-	
+
+    // Return results
+
     ereturn post `b', esample("`touse'") depname("`outcome'") obs(`N')
 
 end
@@ -522,11 +521,11 @@ program _s_1_1, eclass
     qui `model' `instrument' `control' `weight' if `touse' `options'
     qui predict `w'
     qui replace `w' = . if `w' < `trim' | `w' > 1 - `trim'
-	
-	// Split treated and untreated observations
 
-	markout `touse' `w'
-	
+    // Split treated and untreated observations
+
+    markout `touse' `w'
+
     gen `T0' = `touse'*(1 - `treatment')
     gen `T1' = `touse'*`treatment'
 
@@ -541,13 +540,13 @@ program _s_1_1, eclass
     local N1 = `r(N)'
 
     local N = `N0' + `N1'
-	
-	// Construct appropriate weight
-	
-	qui if "`effect'" == "complier" {
-		gen `w' = (2*`T1' - 1)*(`instrument' - `w')/(`w'*(1 - `w'))
+
+    // Construct appropriate weight
+
+    qui if "`effect'" == "complier" {
+        gen `w' = (2*`T1' - 1)*(`instrument' - `w')/(`w'*(1 - `w'))
     }
-	qui else {
+    qui else {
         gen `w' = `T1' + `T0'*(`w' - `instrument')/(1 - `w')
     }
 
@@ -559,9 +558,9 @@ program _s_1_1, eclass
 
     mata: st_matrix("`b'", m_dte("`outcome'", "`T0'", "`T1'", `object', "`w'"))
     matrix colnames `b' = `names'
-	
-	// Return results
-	
+
+    // Return results
+
     ereturn post `b', esample("`touse'") depname("`outcome'") obs(`N')
 
 end
@@ -647,17 +646,17 @@ mata:
         if (args()==1) w = 1
         return(sqrt(quadvariance(x,w)))
     }
-	real scalar the_skewness(real colvector x, | real colvector w) {
-		real vector xx
-        if (args()==1) w = 1
-        xx = x :- mean(x)
-		return(mean(xx:^3) / (mean(xx:^2)^(3/2)))
-    }
-	real scalar the_kurtosis(real colvector x, | real colvector w) {
+    real scalar the_skewness(real colvector x, | real colvector w) {
         real vector xx
         if (args()==1) w = 1
         xx = x :- mean(x)
-		return(mean(xx:^3) / (mean(xx:^2)^2))
+        return(mean(xx:^3) / (mean(xx:^2)^(3/2)))
+    }
+    real scalar the_kurtosis(real colvector x, | real colvector w) {
+        real vector xx
+        if (args()==1) w = 1
+        xx = x :- mean(x)
+        return(mean(xx:^3) / (mean(xx:^2)^2))
     }
     real scalar the_gini(real colvector x, | real colvector w) {
         if (args()==1) w = 1
