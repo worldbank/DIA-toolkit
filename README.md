@@ -3,6 +3,7 @@ This repository contains all the program codes developed in the "Distributional 
 
 ## How to Use the DIA-Toolkit
 
+
 ## How to Contribute 
 If you are familiar with GitHub pelase feel free to fork the repository and submitt a *pull request* with your suggested edits.
 
@@ -10,6 +11,12 @@ An easy but still very efficient way to provide any feedback on the code in this
 
 ## License
 
-This software is released under a creative commons license which allows for personal and research use only. For a commercial license please contact the authors. You can view a license summary here: http://creativecommons.org/licenses/by-nc/4.0/
+This software is released under the Creative Commons Attribution 4.0 International license. You can view a license summary here:
+https://creativecommons.org/licenses/by/4.0/
 
-## How to Reference this Paper
+
+## How to Reference the DIA-Toolkit
+
+Use the following reference for attribution:
+
+Bedoya, Guadalupe, Luca Bittarello, Jonathan Davis, and Nikolas Mittag. "Distributional Impact Analysis: Toolkit and Illustrations of Impacts Beyond the Average Treatment Effect." World Bank Policy Research Working Paper Series, No. WPS XX. Washington, D.C. (July 2017) 
