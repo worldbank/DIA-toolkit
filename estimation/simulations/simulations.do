@@ -36,12 +36,14 @@ gen quantiles = _n if qtt1<.
 
 
 * Figure 2.
-graph twoway (line qtt1 quantiles, lcolor(black)) (line qOft1 quantiles, lcolor(black) lpattern(longdash)) ///
- (line treatOnQ0_pre1 quantiles, lcolor(black) lpattern(dash_dot)), ///
+graph twoway (line qtt1 quantiles, lpattern(longdash)) (line qOft1 quantiles, lcolor(black) lwidth(thick)) ///
+ (line treatOnQ0_pre1 quantiles, lcolor(black) lpattern(solid)), ///
  graphregion(fcolor(white)) legend(label(1 "QTT") label(2 "Quantiles of F{sub:{&Delta}}") ///
-	label(3 "T.E. at Quantile of Baseline Y") ) xtitle("Quantile") ///
+	label(3 "ATE at Quantile of Baseline Y") ) xtitle("Quantile") ///
   ytitle("Treatment Effect") ylabel(,nogrid) note("Note. Based on 10,000 observations drawn from Simulation 1. See appendix 1 for details.")
-graph export "${results_dir}\sim_fig2.tif", replace       
+graph export "${results_dir}\sim_fig2.svg", replace       
+
+    
 
 
 
@@ -65,8 +67,9 @@ clear
 sim_makarov, n(2000)
 graph twoway (kdensity y3 if treat==1, lcolor(black)) ///
  (kdensity y3 if treat==0, lcolor(black) lpattern(longdash)), ///
-	graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Outcomes") ytitle("Density") legend(label(1 "Y{sub:1},{&sigma}{sub:{&Delta}}=5") label(2 "Y{sub:0}"))
-	graph export "${results_dir}\sim_fig3_right.tif", replace
+	graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Outcomes") ytitle("Density") legend(label(1 "F{sub:1},{&sigma}{sub:{&Delta}}=5") label(2 "F{sub:0}"))
+	graph export "${results_dir}\sim_fig3_right.svg", replace
+	
 	
 quantiles y1 treat, nq(1000)
 matrix qtt1 = e(quantiles)
@@ -160,9 +163,9 @@ svmat qOft3
 
 graph twoway (line qtt1 qOft1 makarov_u1 makarov_l1 quantiles, lcolor(black black black black) lpattern(solid dot longdash longdash)) ///
 			 (line qtt3 qOft3 makarov_u3 makarov_l3 quantiles, lcolor(gs10 gs10 gs10 gs10) lpattern(solid dot longdash longdash)), ///
-			  legend(order(1 "QTT, {&sigma}=0" 2 "Quantiles of F{sub:{&Delta}}, {&sigma}=0" 3 "Makarov Bounds, {&sigma}=0" 5 "QTT, {&sigma}=5" 6 "Quantiles of F{sub:{&Delta}}, {&sigma}=5" 7 "Makarov Bounds, {&sigma}=5") colfirst ) ///
+			  legend(order(1 "QTT, {&sigma}=0" 2 "Quantiles of F{sub:{&Delta}}, {&sigma}=0" 3 "Makarov, {&sigma}=0" 5 "QTT, {&sigma}=5" 6 "Quantiles of F{sub:{&Delta}}, {&sigma}=5" 7 "Makarov, {&sigma}=5") colfirst ) ///
 			  graphregion(fcolor(white)) xtitle("Quantiles") ytitle("Treatment Effect") ylabel(,nogrid)
-graph export "${results_dir}\sim_fig3_left.tif", replace
+graph export "${results_dir}\sim_fig3_left.svg", replace
 
 
 
@@ -219,7 +222,7 @@ foreach t in 4  16  {
 	graph twoway (function y=normalden(x,1.5,1), range(-4 6) lw(thick) lcolor(black)) (kdensity  betahat if seq==1, lcolor(black) lpattern(dot)) (kdensity beta , lcolor(black) lpattern(longdash)) , ///
 		legend( label(1 "True Distribution")label(2 "Regression Estimate") label(3 "Deconvolution Estimate")) ///
 		graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ytitle("Density")
-	graph export "${results_dir}\sim_fig4_t`t'.tif", replace	
+	graph export "${results_dir}\sim_fig4_t`t'.svg", replace	
 }
 
 
@@ -481,7 +484,7 @@ graph twoway (function y=normalden(x,1.5,1), range(-4 6) lw(thick) lcolor(black)
 	(kdensity beta_point1 , lcolor(black) lpattern(longdash)) (kdensity beta_point8 , lcolor(black) lpattern(dot)), ///
 		legend( label(1 "True Distribution") label(2 "{&rho}=0") label(3 "{&rho}=0.1") label(4 "{&rho}=0.8")) ///
 		graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ytitle("Density")
-graph export "${results_dir}\sim_fig_10.tif", replace
+graph export "${results_dir}\sim_fig_10.svg", replace
 
 
 
@@ -518,9 +521,9 @@ graph twoway (connected beta_deciles_true q, lw(thick) lcolor(black) mcolor(blac
     (connected beta_deciles0 q, lcolor(gs10) mcolor(gs10)) ///	
 	(connected qte1 q, lcolor(gs10) mcolor(gs10) lpattern(longdash)) , title("{&rho}=0") ///
 	legend(off) ///
-		graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ///
+	graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ///
 	xtitle("Decile") ytitle("Effect") 	ylabel(0(1)4,nogrid)
-graph export "${results_dir}\sim_fig11_rho0.tif", replace	
+graph export "${results_dir}\sim_fig11_rho0.svg", replace	
 	
 graph twoway (connected beta_deciles_true q, lw(thick) lcolor(black) mcolor(black)  lpattern(solid) c(l) m(D) ) ///
     (connected beta_deciles1 q, lcolor(gs10) mcolor(gs10)) ///	
@@ -528,7 +531,7 @@ graph twoway (connected beta_deciles_true q, lw(thick) lcolor(black) mcolor(blac
 	legend(off) ///
 		graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ///
 	xtitle("Decile") ytitle("Effect") 	ylabel(0(1)4,nogrid)
-graph export "${results_dir}\sim_fig11_rho1.tif", replace	
+graph export "${results_dir}\sim_fig11_rho1.svg", replace	
 
 graph twoway (connected beta_deciles_true q, lw(thick) lcolor(black) mcolor(black)  lpattern(solid) c(l) m(D) ) ///
     (connected beta_deciles8 q, lcolor(gs10) mcolor(gs10)) ///	
@@ -536,7 +539,7 @@ graph twoway (connected beta_deciles_true q, lw(thick) lcolor(black) mcolor(blac
 	legend( label(1 "True Deciles") label(2 "Deciles of F{sub:{&Delta}}") label(3 "QTT at Deciles")) ///
 		graphregion(fcolor(white)) ylabel(,nogrid) xtitle("Treatment Effect") ///
 	xtitle("Decile") ytitle("Effect") 	ylabel(0(1)4,nogrid)
-graph export "${results_dir}\sim_fig11_rho8.tif", replace	
+graph export "${results_dir}\sim_fig11_rho8.svg", replace	
 
 	
 
