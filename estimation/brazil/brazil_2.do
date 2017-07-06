@@ -29,7 +29,7 @@ bscr using "${bs_dir}/b_sample.dta", fwer(1)
 dte outcome treatment i.female_coded i.missing_bl c.baseline##c.baseline, ///
 	stat(mean sd pr_75_25) p(5/95) cdf(33/81)                             ///
 	cluster(cd_escola) reps(5000) seed(0101)                              ///
-	saving("${bs_dir}/w_sample.dta", replace)
+	saving("${bs_dir}/w_sample.do", replace)
 
 estat bootstrap, percentile
 bscr using "${bs_dir}/w_sample.dta", fwer(1)
