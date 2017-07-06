@@ -64,7 +64,7 @@ bootstrap, seed(0101) reps(5000) cl(cd_escola) id(bs_id) ///
 
 // Confidence region
 
-bscr *_0 *_1 using "${bs_dir}/z_sample.dta", fwer(1)
+bscr *_0 *_1 using z_sample, fwer(1)
 
 // Critical values
 
