@@ -4,7 +4,12 @@ This repository contains all the program codes developed in the "Distributional 
 
 ## How to Use the DIA-Toolkit
 
-To replicate Part 7, start on `/estimation/master.do`. This master file sets global paths, sets the current directory  and loads auxiliary programs.
+To replicate the simulations in the toolkit and the analysis in Part 7, start on `/estimation/master.do`. This master file sets global paths, sets the current directory  and loads auxiliary programs.
+
+### Replicating Simulations throughout Toolkit
+
+All simulated data are created by user-written commands in `/programs/simulation_programs.do`. 
+The simulation results in the toolkit are run by `/estimation/simulations/simulations`.
 
 ### Replicating Section 7.1
 
@@ -18,6 +23,14 @@ Five files are available under `/estimation/brazil/`:
 
 These files involve bootstrapping, which may be lengthy. The folder `/results/bootstrap/` contains our bootstrap samples, which you can use to replicate our tables without running the algorithms.
 
+### Replicating Section 7.2
+
+Three files are avaiilable under `/estimation/gambia/`:
+
+- `gambia_setup.do` sets up the data (which was provided by M. Blimpo, D.K. Evans and N. Lahire (2015): WB Policy Research WP 7238).
+- `gambia_analysis.do` replicates all of Section 7.2
+- `gambia_simulations.do` replicates the deconvolution estimates using simulated data designed to mimic our sample from The Gambia. (This file is called by `/estimation/simulations/simulations.do`.
+
 ### Programs
 
 These programs are available in `/programs/`.
@@ -26,7 +39,7 @@ These programs are available in `/programs/`.
 - `bscr.do` computes simultaneous confidence regions and critical values from a bootstrap sample of estimators according to Romano and Wolf (2010). `bscr.sthlp` documents the syntax (from Stata, run `help bscr`).
 
 ## How to Contribute 
-If you are familiar with GitHub pelase feel free to fork the repository and submitt a *pull request* with your suggested edits.
+If you are familiar with GitHub pelase feel free to fork the repository and submit a *pull request* with your suggested edits.
 
 An easy but still very efficient way to provide any feedback on the code in this repository is to create an *issue* in GitHub. You can read *issues* submitted by other users or create a new *issue* in the top menu below [**worldbank**/**DIA-toolkit**](https://github.com/worldbank/DIA-toolkit) at [https://github.com/worldbank/DIA-toolkit](https://github.com/worldbank/DIA-toolkit). While the word *issue* has a negative connotation outside GitHub, it can be used for any kind of feedback. If you have identified a bug or an enhancement please create a new *issue* to let us know. Your feedback is very important to us. Please read already existing *issues* to check whether someone else has made the same suggestion or reported the same error before creating a new *issue*.
 
