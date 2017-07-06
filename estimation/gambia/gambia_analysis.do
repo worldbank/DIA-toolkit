@@ -633,7 +633,8 @@ svmat qtt
 
 * Bring in deciles of treatment effects
 gen decile = _n
-merge 1:1 decile using "${data_dir}/deciles.dta"
+merge 1:1 decile using `deciles'
+
  drop _merge
 
 graph twoway (connected effects decile, lcolor(gs10) mcolor(gs10)  lpattern(solid) c(l) m(D) ) ///

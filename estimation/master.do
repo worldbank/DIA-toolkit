@@ -27,6 +27,14 @@ clear all
 set more off
 set matsize 11000
 
+//Packages required
+
+if 1 { //change to 0 if you have all these packages installed
+	
+	ssc install kdens
+	ssc install moremata
+}
+
 /******************************************************************************/
 // SIMULATIONS
 /******************************************************************************/
