@@ -1,5 +1,5 @@
 # DIA-toolkit
-This repository contains all the program codes developed in the "Distributional Impact Analysis: Toolkit and Illustrations of Impacts Beyond the Average Treatment Effect" by Guadalupe Bedoya (World Bank), Luca Bittarello (Northwestern University), Jonathan Davis (University of Chicago), and Nikolas Mittag (CERGE-EI) available at [the World Bank's Policy Research Working Paper Series]( http://documents.worldbank.org/curated/en/292901499351272899/pdf/WPS8139.pdf)
+This repository contains all the program codes developed in the "Distributional Impact Analysis: Toolkit and Illustrations of Impacts Beyond the Average Treatment Effect" by Guadalupe Bedoya (World Bank), Luca Bittarello (Northwestern University), Jonathan Davis (University of Chicago), and Nikolas Mittag (CERGE-EI) available at [the World Bank Policy Research Working Paper Series]( http://documents.worldbank.org/curated/en/292901499351272899/pdf/WPS8139.pdf)
 
 
 ## How to Use the DIA-Toolkit
